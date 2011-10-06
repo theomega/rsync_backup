@@ -1,0 +1,17 @@
+Wrapper around rsync which creates incremental backups using the 'link-dest'
+feature of rsync, so it is creating hardlinks. It checks whether the
+destiation is correctly mounted to ensure that the backup goes into the right
+location. It saves the log-files of each backup together with the backup itself
+for later debugging. The script features a 'statdir' which can help you to
+track when the last backup was done even if the target-drive is currently not
+plugged in. This works by writing the backup-timestamps into a folder on your
+harddisk. To distinguish between mulptile drives, you must first create a
+'.drive_id' file in the root of the device which contains a unique-identifier
+of this backup-device.
+The script is designed for use as a user to backup the home-directory or parts
+of it. It is not meant to backup a whole system. 
+
+Instructions:
+    - Set LOGFILE to a appropriate location
+    - Add one or multiple backup-jobs to the CONFIG array
+
