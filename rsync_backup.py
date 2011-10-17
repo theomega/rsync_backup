@@ -66,9 +66,13 @@ def doBackup(c):
     if (c['source'][-1]!='/'):
         c['source']=c['source']+"/"
 
+    if (c['target'][-1]!='/'):
+        c['target']=c['target']+"/"
+
     target_temp = path.join(c['target'], date+"_incomplete")
-    target= path.join(c['target'], date)
-    logfile=path.join(c['target'], date+'.log')
+    target = path.join(c['target'], date)
+    logfile = path.join(c['target'], date+'.log')
+    symlink = path.join(c['target'], 'current')
 
     #Check if mounted
     if (not path.ismount(c['mountpoint'])):
@@ -94,6 +98,8 @@ def doBackup(c):
         if ('incomplete' in colddir):
             continue
         if ('log' in colddir):
+            continue
+        if ("current" in colddir):
             continue
 
         olddir=colddir
@@ -121,7 +127,7 @@ def doBackup(c):
         '-a', #Archive
         '-v', #Verbose
         '--stats', #Stats
-        '-n',  #Dry
+        #'-n',  #Dry
         '-x', #One File System
         '--delete',
         '--delete-excluded',
@@ -166,6 +172,13 @@ def doBackup(c):
     #Rename directory
     LOG.info("Renaming %s to %s", target_temp, target)
     os.rename(target_temp, target)
+
+    #Create Symlink
+    LOG.info("Creating symlink %s", symlink)
+    if(path.islink(symlink)):
+        LOG.info("Symlink already exists, deleting")
+        os.remove(symlink)
+    os.symlink(date, symlink)
 
     if (driveid is not None):
         #Save stats
